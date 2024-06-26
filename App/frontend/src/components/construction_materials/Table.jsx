@@ -3,7 +3,8 @@ import { RiCreativeCommonsZeroFill } from "react-icons/ri";
 import TableRow from "./ConstructionMaterialTableRow";
 import axios from "axios";
 
-const ConstructionMaterialsTable = () => {
+const ConstructionMaterialsTable = (props) => {
+
   const [materials, setMaterials] = useState([]);
   const [formData, setFormData] = useState({ item: "" });
 

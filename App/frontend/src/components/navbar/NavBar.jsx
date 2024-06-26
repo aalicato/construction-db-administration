@@ -1,25 +1,21 @@
 import { Link } from "react-router-dom";
-import { MdLocalConvenienceStore } from "react-icons/md";
+import { MdConstruction } from "react-icons/md";
 
 const Navbar = () => {
   return (
-    <header>
+    <header className="fixed top-0 left-0 h-screen w-100 flex flex-col bg-gray-900 text-white shadow-lg items-center">
       <div>
         <Link to="/">
-          <MdLocalConvenienceStore size={80} />
+          <MdConstruction size={80} />
         </Link>
       </div>
-      <h1>Green Tree Construction</h1>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/construction_materials">Construction Materials</Link>
-          </li>
-        </ul>
-      </nav>
+      <h1>Evergreen Construction</h1>
+      <div>
+        <nav>
+          <Link to="/">Home</Link>
+          <Link to="/construction_materials">Construction Materials</Link>
+        </nav>
+      </div>
     </header>
   );
 };

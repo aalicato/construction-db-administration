@@ -28,7 +28,7 @@ const getConstructionMaterialByID = async (req, res) => {
     const [result] = await db.query(query, [material_id]);
     // Check if material was found
     if (result.length === 0) {
-      return res.status(404).json({ error: "Constrruction material not found" });
+      return res.status(404).json({ error: "Construction material not found" });
     }
     const material = result[0];
     res.json(material);
@@ -142,5 +142,5 @@ module.exports = {
   getConstructionMaterialByID,
   createConstructionMaterial,
   updateConstructionMaterial,
-  deleteConstructionMaterial,
+  deleteConstructionMaterial
 };

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { BsTrash } from "react-icons/bs";
 import { BiEditAlt } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
 
 const TableRow = ({ material, fetchMaterials }) => {
   const [editable, setEditable] = useState(false);
@@ -23,7 +22,6 @@ const TableRow = ({ material, fetchMaterials }) => {
       const URL = import.meta.env.VITE_API_URL + "construction_materials/" + material.material_id;
       const response = await axios.put(URL, formData);
       if (response.status === 200) {
-        alert("Construction material updated successfully");
         setEditable(false); // Turn off edit mode on successful update
         fetchMaterials(); // Refresh materials
       }
@@ -38,7 +36,6 @@ const TableRow = ({ material, fetchMaterials }) => {
       const URL = import.meta.env.VITE_API_URL + "construction_materials/" + material.material_id;
       const response = await axios.delete(URL);
       if (response.status === 204) {
-        alert("Construction material deleted successfully");
         fetchMaterials();
       }
     } catch (err) {
@@ -48,7 +45,7 @@ const TableRow = ({ material, fetchMaterials }) => {
   };
 
   return (
-    <tr key={material.material_id}>
+    <tr className="" key={material.material_id}>
       {editable ? (
         <>
           <td>{material.material_id}</td>

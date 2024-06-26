@@ -4,7 +4,7 @@ import ConstructionMaterialsTable from "../components/construction_materials/Con
 function ConstructionMaterialsPage() {
   return (
     <div>
-      <h1>Construction Materials</h1>
+      <h1 className="text-center">Construction Materials</h1>
       <nav>
         <ul>
         </ul>

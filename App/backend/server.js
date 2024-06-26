@@ -14,8 +14,8 @@ app.use(cors({ credentials: true, origin: "*" }));
 app.use(express.json());
 
 // API Routes for backend CRUD:
-app.use("/api/people", require("./routes/peopleRoutes"));
-app.use("/api/construction_materials", require("./routes/constructionMaterialsRoutes"))
+app.use("/api/construction_materials", require("./routes/constructionMaterialsRoutes"));
+app.use("/api/dbinfo", require("./routes/dbInfoRoutes"));
 
 
 app.listen(PORT, () => {
