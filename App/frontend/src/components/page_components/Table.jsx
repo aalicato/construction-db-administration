@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
 import { RiCreativeCommonsZeroFill } from "react-icons/ri";
-import TableRow from "./ConstructionMaterialTableRow";
+import TableRow from "./TableRow";
 import axios from "axios";
 
 const Table = ( {rows} ) => {
 
-  console.log(rows[0]["TABLE_NAME"]);
   const [records, setRecords] = useState([]);
   const [formData, setFormData] = useState({});
 
   const fetchRecords = async () => {
     try {
       const URL = import.meta.env.VITE_API_URL + rows[0]["TABLE_NAME"];
-      console.log("URL is " + URL);
       const response = await axios.get(URL);
       setRecords(response.data);
     } catch (error) {
@@ -79,9 +77,9 @@ const Table = ( {rows} ) => {
           <p>No records found.</p>
         </div>
       ) : (
-        <table>
+        <table className="table-auto border-separate border border-spacing-2 shadow-lg">
           <thead>
-            <tr>
+            <tr className="border border-indigo-600">
               <th>ID</th>
               {rows.slice(1).map((row) => (
                 <th>{row["COLUMN_NAME"]}</th>
@@ -90,12 +88,12 @@ const Table = ( {rows} ) => {
           </thead>
           <tbody>
             {records.map((record) => (
-              <TableRow key={record.material_id} material={record} fetchRecords={fetchRecords} />
+              <TableRow key={record[rows[0]["COLUMN_NAME"]]} record={record} fetchRecords={fetchRecords} rows={rows}/>
             ))}
           </tbody>
         </table>
       )}
-      <h2>Create New Record</h2>
+      <h2 className="mt-5 mb-2 text-xl">Create New Record</h2>
       <form onSubmit={handleSubmit}>
         {rows.slice(1).map( (row) => {
           const columnName = row["COLUMN_NAME"]
@@ -103,6 +101,7 @@ const Table = ( {rows} ) => {
           <>
           <label htmlFor={columnName}>{columnName}</label>
           <input className="border"
+            key={columnName}
             type="text"
             name={columnName}
             value={formData.columnName}

@@ -1,5 +1,5 @@
 function HomePage() {
-  return <h2>Feel free to add any information you like about your project</h2>;
+  return <h2>A React-Tailwind web app with DB backend that dynamically creates routes and pages based on DB schema.</h2>;
 }
 
 export default HomePage;

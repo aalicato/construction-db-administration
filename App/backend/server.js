@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 8500;
 app.use(cors({ credentials: true, origin: "*" }));
 app.use(express.json());
 
+
 // API Routes for backend CRUD:
 app.use("/api/construction_materials", require("./routes/constructionMaterialsRoutes"));
 app.use("/api/dbinfo", require("./routes/dbInfoRoutes"));
