@@ -3,30 +3,40 @@ import { RiCreativeCommonsZeroFill } from "react-icons/ri";
 import TableRow from "./ConstructionMaterialTableRow";
 import axios from "axios";
 
-const ConstructionMaterialsTable = (props) => {
+const Table = ( {rows} ) => {
 
-  const [materials, setMaterials] = useState([]);
-  const [formData, setFormData] = useState({ item: "" });
+  console.log(rows[0]["TABLE_NAME"]);
+  const [records, setRecords] = useState([]);
+  const [formData, setFormData] = useState({});
 
-  const fetchMaterials = async () => {
+  const fetchRecords = async () => {
     try {
-      const URL = import.meta.env.VITE_API_URL + "construction_materials";
+      const URL = import.meta.env.VITE_API_URL + rows[0]["TABLE_NAME"];
+      console.log("URL is " + URL);
       const response = await axios.get(URL);
-      setMaterials(response.data);
+      setRecords(response.data);
     } catch (error) {
-      alert("Error fetching construction materials from the server.");
-      console.error("Error fetching constructon materials:", error);
+      alert("Error fetching records from the server.");
+      console.error("Error fetching records:", error);
     }
   };
 
   useEffect(() => {
-    fetchMaterials();
-  }, []);
+    fetchRecords();
+    if (rows.length > 0) {
+      const initialFormData = rows.reduce((accumulator, currentObject) => {
+        accumulator[currentObject["COLUMN_NAME"]] = "";
+        return accumulator;
+      }, {});
+      setFormData(initialFormData);
+    }
+  }, [rows]);
 
   const resetFormFields = () => {
-    setFormData({
-      item: ""
-    });
+    setFormData( rows.slice(1).reduce((accumulator, currentObject) => {
+      accumulator[currentObject["COLUMN_NAME"]] = "";
+      return accumulator;
+    }, {}) );
   };
 
   const handleInputChange = (e) => {
@@ -41,61 +51,72 @@ const ConstructionMaterialsTable = (props) => {
     // Prevent page reload
     e.preventDefault();
     // Create a new material object from the form data
-    const newMaterial = {
-      item: formData.item
-    };
+    const newRecord = rows.slice(1).reduce((accumulator, currentObject) => {
+      accumulator[currentObject["COLUMN_NAME"]] = formData[currentObject["COLUMN_NAME"]];
+      return accumulator;
+    }, {});
 
     try {
-      const URL = import.meta.env.VITE_API_URL + "construction_materials";
-      const response = await axios.post(URL, newMaterial);
+      const URL = import.meta.env.VITE_API_URL + rows[0]["TABLE_NAME"];
+      const response = await axios.post(URL, newRecord);
       if (response.status === 201) {
-        fetchMaterials();
+        fetchRecords();
       } else {
-        alert("Error creating construction material");
+        alert("Error creating new record");
       }
     } catch (error) {
-      alert("Error creating construction material");
-      console.error("Error creating construction material:", error);
+      alert("Error creating record");
+      console.error("Error creating record:", error);
     }
-    // Reset the form fields
     resetFormFields();
   };
 
   return (
     <div className="grid place-items-center">
-      {materials.length === 0 ? (
+      {records.length === 0 ? (
         <div>
           <RiCreativeCommonsZeroFill size={70} color="#ccc" />
-          <p>No construction materials found.</p>
+          <p>No records found.</p>
         </div>
       ) : (
         <table>
           <thead>
             <tr>
               <th>ID</th>
-              <th>Item</th>
+              {rows.slice(1).map((row) => (
+                <th>{row["COLUMN_NAME"]}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {materials.map((material) => (
-              <TableRow key={material.material_id} material={material} fetchMaterials={fetchMaterials} />
+            {records.map((record) => (
+              <TableRow key={record.material_id} material={record} fetchRecords={fetchRecords} />
             ))}
           </tbody>
         </table>
       )}
-      <h2>Create New Construction Material</h2>
+      <h2>Create New Record</h2>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="item">Item Name</label>
-        <input className="border"
-          type="text"
-          name="item"
-          value={formData.item}
-          onChange={handleInputChange}
-        />
-        <button type="submit">Create Construction Material</button>
+        {rows.slice(1).map( (row) => {
+          const columnName = row["COLUMN_NAME"]
+          return (
+          <>
+          <label htmlFor={columnName}>{columnName}</label>
+          <input className="border"
+            type="text"
+            name={columnName}
+            value={formData.columnName}
+            onChange={handleInputChange}
+          />
+          </>
+          )
+        }
+        )}
+        
+        <button type="submit">Create Record</button>
       </form>
     </div>
   );
 };
 
-export default ConstructionMaterialsTable;
+export default Table;

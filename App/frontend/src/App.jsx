@@ -1,12 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import Navbar from "./components/navbar/NavBar";
-import ConstructionMaterialsPage from "./pages/ConstructionMaterialsPage";
-import axios from 'axios'
+import axios from 'axios';
 
 function App() {
-
   const [tableColumnList, setTableColumnList] = useState({});
 
   useEffect(() => {
@@ -22,20 +20,25 @@ function App() {
             prevTable = response.data[i]["TABLE_NAME"];
           }
           if (newTableColumnList[prevTable]) {
-            newTableColumnList[prevTable].push(response.data[i])
+            newTableColumnList[prevTable].push(response.data[i]);
           } else {
-            newTableColumnList[prevTable] = [response.data[i]]
+            newTableColumnList[prevTable] = [response.data[i]];
           }
         }
         setTableColumnList(newTableColumnList);
+        console.log("finished with column list")
       } catch (error) {
-        alert("Error fetching construction materials from the server.");
-        console.error("Error fetching constructon materials:", error);
+        alert("Error fetching DB info from the server.");
+        console.error("Error fetching DB info:", error);
       }
     };
 
     fetchDBInfo();
-  }, []); // Empty dependency array ensures this runs only once after the initial render.
+  }, []);
+
+  const loadComponent = (componentName) => {
+    return lazy(() => import(`./pages/${componentName}Page`));
+  };
 
   return (
     <div>
@@ -45,9 +48,21 @@ function App() {
       <div>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          {Object.keys(tableColumnList).map((table) => (
-            <Route key={table} path={`/${table}/*`} element={<ConstructionMaterialsPage />} />
-          ))}
+          {Object.keys(tableColumnList).map((table) => {
+            const pageName = table.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+            const DynamicComponent = loadComponent(pageName);
+            return (
+              <Route
+                key={table}
+                path={`/${table}/*`}
+                element={
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <DynamicComponent rows={tableColumnList[table]} />
+                  </Suspense>
+                }
+              />
+            );
+          })}
         </Routes>
       </div>
     </div>

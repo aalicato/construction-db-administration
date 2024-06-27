@@ -1,7 +1,8 @@
 import { Routes, Route, Link } from "react-router-dom";
-import ConstructionMaterialsTable from "../components/construction_materials/ConstructionMaterialsTable";
+import Table from "../components/construction_materials/Table";
 
-function ConstructionMaterialsPage() {
+function ConstructionMaterialsPage( props ) {
+  console.log("On page the rows look like this: " + props.rows[0]["TABLE_NAME"]);
   return (
     <div>
       <h1 className="text-center">Construction Materials</h1>
@@ -10,7 +11,7 @@ function ConstructionMaterialsPage() {
         </ul>
       </nav>
       <Routes>
-        <Route path="/" element={<ConstructionMaterialsTable />} />
+        <Route path="/" element={<Table rows={props.rows}/>} />
       </Routes>
     </div>
   );
