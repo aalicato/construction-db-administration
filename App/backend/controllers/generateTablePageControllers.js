@@ -78,7 +78,7 @@ const updateRecord = (tableName, columns, primaryKeyColumn) => (
       const query = `UPDATE ${tableName} SET ${columns.join("= ? ")} WHERE ${primaryKeyColumn}= ?`;
       
       // Add each column value for the new record, but add the primary key value to the end
-      const values = columns.slice(1).map(column => (newRecord[column])).push(primaryKeyValue)
+      const values = columns.map(column => (newRecord[column])).push(primaryKeyValue)
 
       // Perform the update
       await db.query(query, values);

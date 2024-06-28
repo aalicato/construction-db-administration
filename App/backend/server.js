@@ -1,25 +1,31 @@
 const express = require("express");
 const cors = require("cors");
+const { DBInfoRouter, fetchDBInfoServer } = require("./routes/dbInfoRoutes")
+const generateTablePageRoutes = require("./routes/generateTablePageRoutes")
 require("dotenv").config();
 
-const app = express();
-const PORT = process.env.PORT || 8500;
+fetchDBInfoServer().then(rows => {
+  initServer(rows);
+  }, 
+  () => console.error("Error fetching DB info to initialize server")
+);
 
-// Middleware:
+function initServer(DBInfo) {
+    const app = express();
+    const PORT = process.env.PORT || 8500;
+    console.log(DBInfo[0]);
 
-// If on FLIP, use cors() middleware to allow cross-origin requests from the frontend with your port number:
-// EX (local): http://localhost:5173 
-// EX (FLIP/classwork) http://flip3.engr.oregonstate.edu:5173
-app.use(cors({ credentials: true, origin: "*" }));
-app.use(express.json());
+    // Middleware:
+    app.use(cors({ credentials: true, origin: "*" }));
+    app.use(express.json());
 
+    // API Routes for backend CRUD:
+    app.use("/api/dbinfo", DBInfoRouter);
+    DBInfo[0].map((row) => {
+      app.use(`/api/${row["tableName"]}`, generateTablePageRoutes(row["tableName"], row["columns"], row["primaryKeyColumn"]))
+    })
 
-// API Routes for backend CRUD:
-app.use("/api/construction_materials", require("./routes/constructionMaterialsRoutes"));
-app.use("/api/dbinfo", require("./routes/dbInfoRoutes"));
-
-
-app.listen(PORT, () => {
-  // Change this text to whatever FLIP server you're on
-  console.log(`Server running at port ${PORT}...`);
-});
+    app.listen(PORT, () => {
+      console.log(`Server running at port ${PORT}...`);
+    });
+}

@@ -1,9 +1,8 @@
 const express = require("express");
-const router = express.Router();
-const {
-    getDBInfo
-} = require("../controllers/dbInfoController");
+const DBInfoRouter = express.Router();
+const { getDBInfo, fetchDBInfoServer } = require("../controllers/dbInfoController")
 
-router.get("/", getDBInfo);
+DBInfoRouter.get("/", getDBInfo);
 
-module.exports = router;
+// DB info function for server doesn't need route -- only gets called once on server startup
+module.exports = { DBInfoRouter, fetchDBInfoServer };
