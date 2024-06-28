@@ -13,7 +13,6 @@ const TableRow = ({ record, fetchRecords, rows }) => {
       return accumulator;
     }, {});
     setFormData(initialFormData);
-    console.log("At the end of TableRow's useEffect, formData: " + formData)
     }, [record, rows]);
 
     const handleEdit = () => {
@@ -54,7 +53,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
         fetchRecords();
       }
     } catch (err) {
-      alert(err.response.data.error || "Error deleting construction material");
+      alert(err.response.data.error || "Error deleting record");
       console.log(err);
     }
   };

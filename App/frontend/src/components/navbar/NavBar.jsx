@@ -3,7 +3,6 @@ import { MdConstruction } from "react-icons/md";
 
 const Navbar = ({ tables }) => {
 
-  console.log("Tables in navbar: " + tables)
   const formTableTitle = (table) => {
     return table.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
   }

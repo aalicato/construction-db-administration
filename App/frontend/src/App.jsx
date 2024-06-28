@@ -14,7 +14,6 @@ function App() {
         const URL = import.meta.env.VITE_API_URL + "dbinfo";
         const response = await axios.get(URL);
         const tableColumns = response.data;
-        console.log("Here's the response for DB info: " + tableColumns)
         const newTableColumnList = {};
         let prevTable = null;
         
@@ -25,7 +24,6 @@ function App() {
         })
 
         setTableColumnList(newTableColumnList);
-        console.log("Finished building tablecolumnlist. Here's the first row: " + tableColumnList["constructions"])
       } catch (error) {
         alert("Error fetching DB info from the server.");
         console.error("Error fetching DB info:", error);

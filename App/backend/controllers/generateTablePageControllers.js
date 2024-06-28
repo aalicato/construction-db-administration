@@ -4,13 +4,17 @@ const db = require("../database/config");
 require("dotenv").config();
 // Util to deep-compare two objects
 const lodash = require("lodash");
+// Helper for "get" operation column formatting
+const columnFormatter = require("../utils/columnFormatting");
 
 // Creates function that returns all rows for given table
-const getRecords = (tableName) => (
+const getRecords = (tableName, columns, primaryKeyColumn, columnTypes) => (
   async (req, res) => {
   try {
+    const columnsArray = columns.split(", ");
     // Select all rows from the table
-    const query = `SELECT * FROM ${tableName}`;
+    const query = `SELECT ${primaryKeyColumn}, ${columnFormatter(columnsArray, columnTypes)} FROM ${tableName}`;
+    console.log(query, columns);
     // Execute the query using the "db" object from the configuration file
     const [rows] = await db.query(query);
     // Send back the rows to the client
@@ -22,11 +26,12 @@ const getRecords = (tableName) => (
 });
 
 // Creates func that returns a single record from target table by id
-const getRecordByID = (tableName, primaryKeyColumn) => (
+const getRecordByID = (tableName, columns, primaryKeyColumn, columnTypes) => (
   async (req, res) => {
   try {
-    const primaryKeyValue = req.params[primaryKeyColumn];
-    const query = `SELECT * FROM ${tableName} WHERE ${primaryKeyColumn} = ?`;
+    const primaryKeyValue = req.params.id;
+    const columnsArray = columns.split(", ");
+    const query = `SELECT ${primaryKeyColumn}, ${columnFormatter(columnsArray, columnTypes)} FROM ${tableName} WHERE ${primaryKeyColumn} = ?`;
     const [result] = await db.query(query, [primaryKeyValue]);
     // Check if record was found
     if (result.length === 0) {
@@ -62,7 +67,7 @@ const createRecord = (tableName, columns) => (
 const updateRecord = (tableName, columns, primaryKeyColumn) => (
   async (req, res) => {
   // Get the ID
-  const primaryKeyValue = req.params[primaryKeyColumn];
+  const primaryKeyValue = req.params.id;
   // Get the new object
   const newRecord = req.body;
 
@@ -98,8 +103,8 @@ const updateRecord = (tableName, columns, primaryKeyColumn) => (
 // Endpoint to delete a record from the database
 const deleteRecord = (tableName, primaryKeyColumn) => (
   async (req, res) => {
-  console.log("Deleting record with id: ", req.params[primaryKeyColumn]);
-  const primaryKeyValue = req.params[primaryKeyColumn];
+  console.log(`Deleting record from ${tableName} with id:`, req.params.id);
+  const primaryKeyValue = req.params.id;
 
   try {
     // Ensure the record exists

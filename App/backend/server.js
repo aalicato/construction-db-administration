@@ -13,7 +13,6 @@ fetchDBInfoServer().then(rows => {
 function initServer(DBInfo) {
     const app = express();
     const PORT = process.env.PORT || 8500;
-    console.log(DBInfo[0]);
 
     // Middleware:
     app.use(cors({ credentials: true, origin: "*" }));
@@ -22,7 +21,7 @@ function initServer(DBInfo) {
     // API Routes for backend CRUD:
     app.use("/api/dbinfo", DBInfoRouter);
     DBInfo[0].map((row) => {
-      app.use(`/api/${row["tableName"]}`, generateTablePageRoutes(row["tableName"], row["columns"], row["primaryKeyColumn"]))
+      app.use(`/api/${row["tableName"]}`, generateTablePageRoutes(row["tableName"], row["columns"], row["primaryKeyColumn"], row["columnTypes"]))
     })
 
     app.listen(PORT, () => {

@@ -5,7 +5,6 @@
  DDL
  */
 START TRANSACTION;
--- --------------------------------------------------------
 --
 -- constructions table
 --
@@ -13,11 +12,11 @@ START TRANSACTION;
 CREATE TABLE `constructions` (
     `construction_id` int(11) NOT NULL,
     `project_id` int(11) NULL,
-    `construction_start_date` date DEFAULT NULL,
-    `construction_completion_date` date DEFAULT NULL,
+    `construction_start_date` date DEFAULT NULL COMMENT 'd',
+    `construction_completion_date` date DEFAULT NULL COMMENT 'd',
     `construction_location` varchar(60) NOT NULL,
-    `construction_total` decimal(19, 4) NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3 COLLATE = utf8mb3_general_ci;
+    `construction_total` decimal(19, 2) NOT NULL COMMENT 'c'
+);
 --
 -- constructions sample inserts
 --
@@ -36,7 +35,7 @@ VALUES (
         '2023-02-04',
         '2029-02-04',
         'Portland, Oregon',
-        52000.0000
+        52000.00
     ),
     (
         2,
@@ -44,7 +43,7 @@ VALUES (
         '2023-02-05',
         '2029-02-05',
         'Portland, Oregon',
-        112000.0000
+        112000.00
     ),
     (
         3,
@@ -52,7 +51,7 @@ VALUES (
         '2023-02-06',
         '2029-02-06',
         'Portland, Oregon',
-        13423.0000
+        13423.00
     );
 -- --------------------------------------------------------
 --
@@ -62,7 +61,7 @@ VALUES (
 CREATE TABLE `construction_materials` (
     `material_id` int(11) NOT NULL,
     `item` varchar(145) NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3 COLLATE = utf8mb3_general_ci;
+);
 --
 -- construction_materials sample data inserts
 --
@@ -81,8 +80,8 @@ CREATE TABLE `material_expenditures` (
     `vendor_specific_material_id` int(11) NOT NULL,
     `construction_id` int(11) NOT NULL,
     `quantity_material_expended` int(11) NOT NULL,
-    `date_expended` date DEFAULT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3 COLLATE = utf8mb3_general_ci;
+    `date_expended` date DEFAULT NULL COMMENT 'd'
+);
 --
 -- material_expenditures sample inserts
 --
@@ -104,9 +103,9 @@ VALUES (1, 1, 1, 5, '2023-02-05'),
 
 CREATE TABLE `material_orders` (
     `material_order_id` int(11) NOT NULL,
-    `total_cost` decimal(19, 4) NOT NULL,
-    `purchase_date` datetime NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3 COLLATE = utf8mb3_general_ci;
+    `total_cost` decimal(19, 2) NOT NULL COMMENT 'c',
+    `purchase_date` datetime NOT NULL COMMENT 'd'
+);
 --
 -- material_orders sample inserts
 --
@@ -129,7 +128,7 @@ CREATE TABLE `order_details` (
     `material_order_id` int(11) NOT NULL,
     `vendor_specific_material_id` int(11) NOT NULL,
     `quantity_ordered` int(11) NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3 COLLATE = utf8mb3_general_ci;
+);
 --
 -- order_details sample data inserts
 --
@@ -152,11 +151,11 @@ VALUES (1, 1, 1, 40),
 CREATE TABLE `projects` (
     `project_id` int(11) NOT NULL,
     `project_manager` varchar(45) NOT NULL,
-    `project_start_date` date NOT NULL,
-    `project_completion_date` date NOT NULL,
+    `project_start_date` date NOT NULL COMMENT 'd',
+    `project_completion_date` date NOT NULL COMMENT 'd',
     `project_location` varchar(60) NOT NULL,
-    `project_total` decimal(19, 4) NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3 COLLATE = utf8mb3_general_ci;
+    `project_total` decimal(19, 2) NOT NULL COMMENT 'c'
+);
 --
 -- projects table sample inserts
 --
@@ -175,7 +174,7 @@ VALUES (
         '2023-02-04',
         '2029-02-04',
         'Portland, Oregon',
-        120321.0000
+        120321.00
     ),
     (
         2,
@@ -183,7 +182,7 @@ VALUES (
         '2023-02-05',
         '2029-02-05',
         'Portland, Oregon',
-        130230.0000
+        130230.00
     ),
     (
         3,
@@ -191,7 +190,7 @@ VALUES (
         '2023-02-06',
         '2029-02-06',
         'Portland, Oregon',
-        42000.0000
+        42000.00
     );
 -- --------------------------------------------------------
 --
@@ -204,7 +203,7 @@ CREATE TABLE `vendors` (
     `email_address` varchar(50) NOT NULL,
     `phone_number` varchar(20) NOT NULL,
     `address` varchar(60) NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3 COLLATE = utf8mb3_general_ci;
+);
 --
 -- vendors table sample inserts
 --
@@ -253,9 +252,9 @@ CREATE TABLE `vendor_specific_materials` (
     `vendor_specific_material_id` int(11) NOT NULL,
     `vendor_id` int(11) NOT NULL,
     `material_id` int(11) NOT NULL,
-    `per_unit_price` decimal(19, 4) NOT NULL,
+    `per_unit_price` decimal(19, 2) NOT NULL COMMENT 'c',
     `units_available` int(11) NOT NULL
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3 COLLATE = utf8mb3_general_ci;
+);
 --
 -- vendor_specific_materials sample inserts
 --
@@ -264,11 +263,12 @@ INSERT INTO `vendor_specific_materials` (
         `vendor_specific_material_id`,
         `vendor_id`,
         `material_id`,
-        `per_unit_price`
+        `per_unit_price`,
+        `units_available`
     )
-VALUES (1, 1, 1, 40.0000),
-    (2, 2, 2, 1300.0000),
-    (3, 3, 2, 1250.0000);
+VALUES (1, 1, 1, 40.00, 5000),
+    (2, 2, 2, 1300.00, 4000),
+    (3, 3, 2, 1250.00, 3000);
 --
 -- Keys and Constraints
 --
@@ -552,5 +552,5 @@ WHERE project_id = (
 END IF;
 END;
 // 
-DELIMITER;
+DELIMITER ;
 COMMIT;
