@@ -70,7 +70,7 @@ const Table = ( {rows} ) => {
   };
 
   return (
-    <div className="grid place-items-center">
+    <div className="grid place-items-center h-screen">
       {records.length === 0 ? (
         <div>
           <RiCreativeCommonsZeroFill size={70} color="#ccc" />
