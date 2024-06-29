@@ -45,6 +45,7 @@ const getRecordByID = (table, columns) => (
 const createRecord = (table, columns) => (
   async (req, res) => {
   try {
+    console.log(req.body)
     let query = `INSERT INTO ${table} (${columns.slice(1).map(column => column["COLUMN_NAME"]).join(", ")}) VALUES (${new Array (columns.length - 1).fill("?").join(", ")});`;
     const response = await db.query(query, columns.slice(1).map(column => req.body[column["COLUMN_NAME"]]));
     res.status(201).json(response);
@@ -70,7 +71,7 @@ const updateRecord = (table, columns) => (
     const oldRecord = data[0];
     // If any attributes are not equal, perform update
     if (!lodash.isEqual(newRecord, oldRecord)) {
-      const query = `UPDATE ${table} SET ${columns.slice(1).map(column => column["COLUMN_NAME"]).join(" = ? ")} = ? WHERE ${columns[0]["COLUMN_NAME"]} = ?`;
+      const query = `UPDATE ${table} SET ${columns.slice(1).map(column => column["COLUMN_NAME"]).join(" = ?, ")} = ? WHERE ${columns[0]["COLUMN_NAME"]} = ?`;
       
       // Add each column value for the new record, but add the primary key value to the end
       const values = columns.slice(1).map(column => (newRecord[column["COLUMN_NAME"]]))

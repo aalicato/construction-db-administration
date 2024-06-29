@@ -10,6 +10,7 @@ const pool = mysql.createPool({
   user: process.env.DB_USER || "x",
   password: process.env.DB_PASSWORD || "x",
   database: process.env.DB_DATABASE || "x",
+  dateStrings: true
 }).promise();
 
 // Export it for use in our application

@@ -98,7 +98,10 @@ const TableRow = ({ record, fetchRecords, rows }) => {
       ) : (
         <>
           {
-            Object.values(record).map((value, index) => {
+            rows.map((row, index) => {
+              let value = record[row["COLUMN_NAME"]];
+              if (row["COLUMN_COMMENT"] === "c") value = "$" + value;
+              if (value && row["DATA_TYPE"] === "date") value = value.slice(5,7) + "/" + value.slice(8, 10) + "/" + value.slice(0,4) ; 
             return (<td key={index}>{value}</td>)
             })
           }

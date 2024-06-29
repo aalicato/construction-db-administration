@@ -23,7 +23,7 @@ const Navbar = ({ tables }) => {
           
           {
             tables.map((table) => (
-              <div className="mb-9 p-3 text-center rounded-md">
+              <div key={table} className="mb-9 p-3 text-center rounded-md">
                 <Link className="border mb-5 mrl-5 text-center p-3 rounded-lg hover:bg-gray-700" to={`/${table}`}>{formTableTitle(table)}</Link>
               </div>
             ))

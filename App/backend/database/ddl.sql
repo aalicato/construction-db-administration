@@ -12,8 +12,8 @@ START TRANSACTION;
 CREATE TABLE `constructions` (
     `construction_id` int(11) NOT NULL,
     `project_id` int(11) NULL,
-    `construction_start_date` date DEFAULT NULL COMMENT 'd',
-    `construction_completion_date` date DEFAULT NULL COMMENT 'd',
+    `construction_start_date` date DEFAULT NULL,
+    `construction_completion_date` date DEFAULT NULL,
     `construction_location` varchar(60) NOT NULL,
     `construction_total` decimal(19, 2) NOT NULL COMMENT 'c'
 );
@@ -72,22 +72,22 @@ VALUES (1, '10,000x Steel Nails'),
     (3, '50x Northern Pine 2x4');
 -- --------------------------------------------------------
 --
--- material_expenditures table
+-- material_expendings table
 --
 
-CREATE TABLE `material_expenditures` (
-    `material_expenditure_id` int(11) NOT NULL,
+CREATE TABLE `material_expendings` (
+    `material_expending_id` int(11) NOT NULL,
     `vendor_specific_material_id` int(11) NOT NULL,
     `construction_id` int(11) NOT NULL,
     `quantity_material_expended` int(11) NOT NULL,
-    `date_expended` date DEFAULT NULL COMMENT 'd'
+    `date_expended` date DEFAULT NULL
 );
 --
--- material_expenditures sample inserts
+-- material_expendings sample inserts
 --
 
-INSERT INTO `material_expenditures` (
-        `material_expenditure_id`,
+INSERT INTO `material_expendings` (
+        `material_expending_id`,
         `vendor_specific_material_id`,
         `construction_id`,
         `quantity_material_expended`,
@@ -104,7 +104,7 @@ VALUES (1, 1, 1, 5, '2023-02-05'),
 CREATE TABLE `material_orders` (
     `material_order_id` int(11) NOT NULL,
     `total_cost` decimal(19, 2) NOT NULL COMMENT 'c',
-    `purchase_date` date NOT NULL COMMENT 'd'
+    `purchase_date` date NOT NULL
 );
 --
 -- material_orders sample inserts
@@ -151,8 +151,8 @@ VALUES (1, 1, 1, 40),
 CREATE TABLE `projects` (
     `project_id` int(11) NOT NULL,
     `project_manager` varchar(45) NOT NULL,
-    `project_start_date` date NOT NULL COMMENT 'd',
-    `project_completion_date` date NOT NULL COMMENT 'd',
+    `project_start_date` date NOT NULL,
+    `project_completion_date` date NOT NULL,
     `project_location` varchar(60) NOT NULL,
     `project_total` decimal(19, 2) NOT NULL COMMENT 'c'
 );
@@ -285,10 +285,10 @@ ADD PRIMARY KEY (`construction_id`),
 ALTER TABLE `construction_materials`
 ADD PRIMARY KEY (`material_id`);
 --
--- Indexes for table `material_expenditures`
+-- Indexes for table `material_expendings`
 --
-ALTER TABLE `material_expenditures`
-ADD PRIMARY KEY (`material_expenditure_id`),
+ALTER TABLE `material_expendings`
+ADD PRIMARY KEY (`material_expending_id`),
     ADD KEY `fk_vendor_specific_materials_has_constructions_construction_idx` (`construction_id`),
     ADD KEY `fk_vendor_specific_materials_has_constructions_vendor_speci_idx` (`vendor_specific_material_id`);
 --
@@ -367,10 +367,10 @@ ALTER TABLE `order_details`
 MODIFY `order_detail_id` int (11) NOT NULL AUTO_INCREMENT,
     AUTO_INCREMENT = 5;
 --
--- AUTO_INCREMENT for table `materiaL_expenditures`
+-- AUTO_INCREMENT for table `material_expendings`
 --
-ALTER TABLE `material_expenditures`
-MODIFY `material_expenditure_id` int (11) NOT NULL AUTO_INCREMENT,
+ALTER TABLE `material_expendings`
+MODIFY `material_expending_id` int (11) NOT NULL AUTO_INCREMENT,
     AUTO_INCREMENT = 4;
 --
 -- Constraints for dumped tables
@@ -382,9 +382,9 @@ MODIFY `material_expenditure_id` int (11) NOT NULL AUTO_INCREMENT,
 ALTER TABLE `constructions`
 ADD CONSTRAINT `fk_constructions_projects2` FOREIGN KEY (`project_id`) REFERENCES `projects` (`project_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 --
--- Constraints for table `material_expenditures`
+-- Constraints for table `material_expendings`
 --
-ALTER TABLE `material_expenditures`
+ALTER TABLE `material_expendings`
 ADD CONSTRAINT `fk_vendor_specific_materials_has_constructions_constructions1` FOREIGN KEY (`construction_id`) REFERENCES `constructions` (`construction_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     ADD CONSTRAINT `fk_vendor_specific_materials_has_constructions_vendor_specifi1` FOREIGN KEY (`vendor_specific_material_id`) REFERENCES `vendor_specific_materials` (`vendor_specific_material_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 --
@@ -414,8 +414,8 @@ CREATE FUNCTION u_price(v_id INT) RETURNS INT RETURN (
 );
 CREATE FUNCTION q_expended(m_id INT) RETURNS INT RETURN (
     SELECT quantity_material_expended
-    FROM materiaL_expenditures
-    WHERE material_expenditure_id = m_id
+    FROM material_expendings
+    WHERE material_expending_id = m_id
 );
 CREATE FUNCTION c_total(c_id INT) returns INT RETURN (
     SELECT construction_total
@@ -446,8 +446,7 @@ SET total_cost = total_cost + (
     )
 WHERE material_order_id = NEW.material_order_id;
 END;
-// 
-CREATE TRIGGER edit_material BEFORE
+// CREATE TRIGGER edit_material BEFORE
 UPDATE ON order_details FOR EACH ROW BEGIN
 UPDATE vendor_specific_materials
 SET units_available = units_available + (
@@ -462,8 +461,7 @@ SET total_cost = total_cost + (
     )
 WHERE material_order_id = NEW.material_order_id;
 END;
-// 
-CREATE TRIGGER remove_material BEFORE DELETE ON order_details FOR EACH ROW BEGIN
+// CREATE TRIGGER remove_material BEFORE DELETE ON order_details FOR EACH ROW BEGIN
 UPDATE vendor_specific_materials
 SET units_available = units_available - OLD.quantity_ordered
 WHERE vendor_specific_material_id = OLD.vendor_specific_material_id;
@@ -473,12 +471,11 @@ SET total_cost = total_cost - (
     )
 WHERE material_order_id = OLD.material_order_id;
 END;
-// 
---
--- `material_expenditures` triggers
+// --
+-- `material_expendings` triggers
 --
 CREATE TRIGGER add_expenditure BEFORE
-INSERT ON material_expenditures FOR EACH ROW BEGIN
+INSERT ON material_expendings FOR EACH ROW BEGIN
 UPDATE constructions
 SET construction_total = construction_total + (
         NEW.quantity_material_expended * u_price(NEW.vendor_specific_material_id)
@@ -500,13 +497,12 @@ WHERE project_id = (
     );
 END IF;
 END;
-// 
-CREATE TRIGGER edit_expenditure BEFORE
-UPDATE ON material_expenditures FOR EACH ROW BEGIN
+// CREATE TRIGGER edit_expenditure BEFORE
+UPDATE ON material_expendings FOR EACH ROW BEGIN
 UPDATE constructions
 SET construction_total = construction_total + (
         (
-            NEW.quantity_material_expended - q_expended(NEW.material_expenditure_id)
+            NEW.quantity_material_expended - q_expended(NEW.material_expending_id)
         ) * u_price(NEW.vendor_specific_material_id)
     )
 WHERE construction_id = NEW.construction_id;
@@ -518,7 +514,7 @@ IF (
 UPDATE projects
 SET project_total = project_total + (
         (
-            NEW.quantity_material_expended - q_expended(NEW.material_expenditure_id)
+            NEW.quantity_material_expended - q_expended(NEW.material_expending_id)
         ) * u_price(NEW.vendor_specific_material_id)
     )
 WHERE project_id = (
@@ -528,8 +524,7 @@ WHERE project_id = (
     );
 END IF;
 END;
-// 
-CREATE TRIGGER delete_expenditure BEFORE DELETE ON material_expenditures FOR EACH ROW BEGIN
+// CREATE TRIGGER delete_expenditure BEFORE DELETE ON material_expendings FOR EACH ROW BEGIN
 UPDATE constructions
 SET construction_total = construction_total - (
         OLD.quantity_material_expended * u_price(OLD.vendor_specific_material_id)
@@ -551,6 +546,5 @@ WHERE project_id = (
     );
 END IF;
 END;
-// 
-DELIMITER ;
+// DELIMITER ;
 COMMIT;

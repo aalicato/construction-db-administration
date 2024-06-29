@@ -12,6 +12,7 @@ const Table = ( {rows} ) => {
     try {
       const URL = import.meta.env.VITE_API_URL + rows[0]["TABLE_NAME"];
       const response = await axios.get(URL);
+      console.log("Fetched records:", response)
       setRecords(response.data);
     } catch (error) {
       alert("Error fetching records from the server.");
@@ -87,7 +88,7 @@ const Table = ( {rows} ) => {
             <tr className="border border-indigo-600">
               <th>ID</th>
               {rows.slice(1).map((row) => (
-                <th>{row["COLUMN_NAME"]}</th>
+                <th key={row["COLUMN_NAME"]} >{row["COLUMN_NAME"]}</th>
               ))}
             </tr>
           </thead>
@@ -103,7 +104,7 @@ const Table = ( {rows} ) => {
         {rows.slice(1).map( (row) => {
           const columnName = row["COLUMN_NAME"]
           return (
-          <>
+          <div key={columnName}>
           <label htmlFor={columnName}>{columnName}</label>
           <input className="border"
             key={columnName}
@@ -112,7 +113,7 @@ const Table = ( {rows} ) => {
             value={formData.columnName}
             onChange={handleInputChange}
           />
-          </>
+          </div>
           )
         }
         )}
