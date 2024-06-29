@@ -53,7 +53,7 @@ const Table = ( {rows} ) => {
       accumulator[currentObject["COLUMN_NAME"]] = formData[currentObject["COLUMN_NAME"]];
       return accumulator;
     }, {});
-
+    console.log("New record to be created:", newRecord);
     try {
       const URL = import.meta.env.VITE_API_URL + rows[0]["TABLE_NAME"];
       const response = await axios.post(URL, newRecord);
@@ -67,6 +67,11 @@ const Table = ( {rows} ) => {
       console.error("Error creating record:", error);
     }
     resetFormFields();
+  };
+
+  const formType = (columnType) => {
+    if (columnType === "date") return "date";
+    return "text";
   };
 
   return (
@@ -102,7 +107,7 @@ const Table = ( {rows} ) => {
           <label htmlFor={columnName}>{columnName}</label>
           <input className="border"
             key={columnName}
-            type="text"
+            type={formType(row["DATA_TYPE"])}
             name={columnName}
             value={formData.columnName}
             onChange={handleInputChange}

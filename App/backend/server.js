@@ -1,16 +1,25 @@
 const express = require("express");
 const cors = require("cors");
-const { DBInfoRouter, fetchDBInfoServer } = require("./routes/dbInfoRoutes")
-const generateTablePageRoutes = require("./routes/generateTablePageRoutes")
 require("dotenv").config();
+const DBInfoRouter = require("./routes/dbInfoRoutes")
+const generateTablePageRoutes = require("./routes/generateTablePageRoutes")
+const fetchDBInfoServer = require("./utils/fetchDBInfoServer")
 
-fetchDBInfoServer().then(rows => {
-  initServer(rows);
+fetchDBInfoServer().then(tables => {
+  const tableColumns = {};
+  let prevTable = null;
+
+  tables[0].map( (table) => {
+    prevTable = (table["TABLE_NAME"] === prevTable) ? prevTable : table["TABLE_NAME"];
+    if (tableColumns[prevTable]) tableColumns[prevTable].push(table);
+    else tableColumns[prevTable] = [table];
+    })
+  initServer(tableColumns);
   }, 
   () => console.error("Error fetching DB info to initialize server")
 );
 
-function initServer(DBInfo) {
+function initServer(tableColumns) {
     const app = express();
     const PORT = process.env.PORT || 8500;
 
@@ -20,8 +29,9 @@ function initServer(DBInfo) {
 
     // API Routes for backend CRUD:
     app.use("/api/dbinfo", DBInfoRouter);
-    DBInfo[0].map((row) => {
-      app.use(`/api/${row["tableName"]}`, generateTablePageRoutes(row["tableName"], row["columns"], row["primaryKeyColumn"], row["columnTypes"]))
+    Object.keys(tableColumns).map((table) => {
+      console.log(table, tableColumns[table])
+      app.use(`/api/${table}`, generateTablePageRoutes(table, tableColumns[table]))
     })
 
     app.listen(PORT, () => {

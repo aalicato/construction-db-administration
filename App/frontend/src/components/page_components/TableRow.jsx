@@ -58,6 +58,11 @@ const TableRow = ({ record, fetchRecords, rows }) => {
     }
   };
 
+  const formType = (columnType) => {
+    if (columnType === "date") return "date";
+    return "text";
+  };
+
   return (
     <tr className="text-l" key={record[rows[0]["COLUMN_NAME"]]}>
       {editable ? (
@@ -70,7 +75,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
                 <td>
                 <input
                 key={row["COLUMN_NAME"]}
-                type="text"
+                type={formType(row["DATA_TYPE"])}
                 name={row["COLUMN_NAME"]}
                 onChange={handleInputChange}
                 required

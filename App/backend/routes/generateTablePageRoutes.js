@@ -2,14 +2,14 @@ const express = require("express");
 const { getRecords, getRecordByID, createRecord, updateRecord, deleteRecord } 
 = require("../controllers/generateTablePageControllers")
 
-const generateTablePageRoutes = (tableName, columns, primaryKeyColumn, columnTypes) => 
+const generateTablePageRoutes = (table, columns) => 
   {
     const router = express.Router();
-    router.get("/", getRecords(tableName, columns, primaryKeyColumn, columnTypes));
-    router.get("/:id", getRecordByID(tableName, columns, primaryKeyColumn, columnTypes));
-    router.post("/", createRecord(tableName, columns));
-    router.put("/:id", updateRecord(tableName, columns, primaryKeyColumn));
-    router.delete("/:id", deleteRecord(tableName, primaryKeyColumn));
+    router.get("/", getRecords(table, columns));
+    router.get("/:id", getRecordByID(table, columns));
+    router.post("/", createRecord(table, columns));
+    router.put("/:id", updateRecord(table, columns));
+    router.delete("/:id", deleteRecord(table, columns));
     return router;
   }
 

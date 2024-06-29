@@ -4,34 +4,30 @@ const db = require("../database/config");
 require("dotenv").config();
 // Util to deep-compare two objects
 const lodash = require("lodash");
-// Helper for "get" operation column formatting
-const columnFormatter = require("../utils/columnFormatting");
 
 // Creates function that returns all rows for given table
-const getRecords = (tableName, columns, primaryKeyColumn, columnTypes) => (
+const getRecords = (table, columns) => (
   async (req, res) => {
   try {
-    const columnsArray = columns.split(", ");
     // Select all rows from the table
-    const query = `SELECT ${primaryKeyColumn}, ${columnFormatter(columnsArray, columnTypes)} FROM ${tableName}`;
+    const query = `SELECT * FROM ${table}`;
     console.log(query, columns);
     // Execute the query using the "db" object from the configuration file
     const [rows] = await db.query(query);
     // Send back the rows to the client
     res.status(200).json(rows);
   } catch (error) {
-    console.error(`Error fetching ${tableName} records from the database:`, error);
-    res.status(500).json({ error: `Error fetching records for ${tableName}` });
+    console.error(`Error fetching ${table} records from the database:`, error);
+    res.status(500).json({ error: `Error fetching records for ${table}` });
   }
 });
 
 // Creates func that returns a single record from target table by id
-const getRecordByID = (tableName, columns, primaryKeyColumn, columnTypes) => (
+const getRecordByID = (table, columns) => (
   async (req, res) => {
   try {
     const primaryKeyValue = req.params.id;
-    const columnsArray = columns.split(", ");
-    const query = `SELECT ${primaryKeyColumn}, ${columnFormatter(columnsArray, columnTypes)} FROM ${tableName} WHERE ${primaryKeyColumn} = ?`;
+    const query = `SELECT * FROM ${table} WHERE ${columns[0]["COLUMN_NAME"]} = ?`;
     const [result] = await db.query(query, [primaryKeyValue]);
     // Check if record was found
     if (result.length === 0) {
@@ -46,16 +42,11 @@ const getRecordByID = (tableName, columns, primaryKeyColumn, columnTypes) => (
 });
 
 // Creates function that creates a record in target table
-const createRecord = (tableName, columns) => (
+const createRecord = (table, columns) => (
   async (req, res) => {
   try {
-    const columnsValues = {};
-    columns.forEach(column => {
-      columnsValues[column] = req.body[column];
-    });
-    const questionMarks = new Array(columns.length).fill("?");
-    let query = `INSERT INTO ${tableName} (${columnsValues.join(", ")}) VALUES (${questionMarks.join(", ")});`;
-    const response = await db.query(query, [Object.values(columnsValues)]);
+    let query = `INSERT INTO ${table} (${columns.slice(1).map(column => column["COLUMN_NAME"]).join(", ")}) VALUES (${new Array (columns.length - 1).fill("?").join(", ")});`;
+    const response = await db.query(query, columns.slice(1).map(column => req.body[column["COLUMN_NAME"]]));
     res.status(201).json(response);
   } catch (error) {
     console.error("Error creating record:", error);
@@ -64,26 +55,27 @@ const createRecord = (tableName, columns) => (
 });
 
 // Creates function that updates a record in the target table
-const updateRecord = (tableName, columns, primaryKeyColumn) => (
+const updateRecord = (table, columns) => (
   async (req, res) => {
   // Get the ID
   const primaryKeyValue = req.params.id;
+  console.log("primary key value received in update:", primaryKeyValue)
   // Get the new object
   const newRecord = req.body;
-
+  console.log("new record to extract values from:", newRecord)
   try {
-    const [data] = await db.query(`SELECT * FROM ${tableName} WHERE ${primaryKeyColumn} = ?`, [
+    const [data] = await db.query(`SELECT * FROM ${table} WHERE ${columns[0]["COLUMN_NAME"]} = ?`, [
       primaryKeyValue
     ]);
-
     const oldRecord = data[0];
-
     // If any attributes are not equal, perform update
     if (!lodash.isEqual(newRecord, oldRecord)) {
-      const query = `UPDATE ${tableName} SET ${columns.join("= ? ")} WHERE ${primaryKeyColumn}= ?`;
+      const query = `UPDATE ${table} SET ${columns.slice(1).map(column => column["COLUMN_NAME"]).join(" = ? ")} = ? WHERE ${columns[0]["COLUMN_NAME"]} = ?`;
       
       // Add each column value for the new record, but add the primary key value to the end
-      const values = columns.map(column => (newRecord[column])).push(primaryKeyValue)
+      const values = columns.slice(1).map(column => (newRecord[column["COLUMN_NAME"]]))
+      values.push(primaryKeyValue);
+      console.log("values to be passed to the update query:", values)
 
       // Perform the update
       await db.query(query, values);
@@ -96,20 +88,20 @@ const updateRecord = (tableName, columns, primaryKeyColumn) => (
     console.log("Error updating record", error);
     res
       .status(500)
-      .json({ error: `Error updating the ${tableName} record with id ${primaryKeyValue}` });
+      .json({ error: `Error updating the ${table} record with id ${primaryKeyValue}` });
   }
 });
 
 // Endpoint to delete a record from the database
-const deleteRecord = (tableName, primaryKeyColumn) => (
+const deleteRecord = (table, columns) => (
   async (req, res) => {
-  console.log(`Deleting record from ${tableName} with id:`, req.params.id);
+  console.log(`Deleting record from ${table} with id:`, req.params.id);
   const primaryKeyValue = req.params.id;
 
   try {
     // Ensure the record exists
     const [isExisting] = await db.query(
-      `SELECT 1 FROM ${tableName} WHERE ${primaryKeyColumn} = ?`,
+      `SELECT 1 FROM ${table} WHERE ${columns[0]["COLUMN_NAME"]} = ?`,
       [primaryKeyValue]
     );
 
@@ -119,7 +111,7 @@ const deleteRecord = (tableName, primaryKeyColumn) => (
     }
 
     // Delete the record from the table
-    await db.query(`DELETE FROM ${tableName} WHERE ${primaryKeyColumn} = ?`, [primaryKeyValue]);
+    await db.query(`DELETE FROM ${table} WHERE ${columns[0]["COLUMN_NAME"]} = ?`, [primaryKeyValue]);
 
     // Return the appropriate status code
     res.status(204).json({ message: "Record deleted successfully" })

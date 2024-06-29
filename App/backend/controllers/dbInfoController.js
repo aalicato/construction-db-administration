@@ -11,62 +11,7 @@ const getDBInfo = async (req, res) => {
     }
 };
 
-const fetchDBInfoServer = async () => {
-    dbInfoQuery = `SELECT 
-        t.TABLE_NAME AS tableName,
-        GROUP_CONCAT(
-            CASE 
-                WHEN kcu.CONSTRAINT_NAME IS NULL THEN c.COLUMN_NAME
-                ELSE NULL 
-            END 
-            ORDER BY c.ordinal_position SEPARATOR ', '
-        ) AS columns,
-        MAX(
-            CASE 
-                WHEN kcu.CONSTRAINT_NAME IS NOT NULL THEN c.COLUMN_NAME
-                ELSE NULL 
-            END
-        ) AS primaryKeyColumn,
-        GROUP_CONCAT(
-            CASE 
-                WHEN kcu.CONSTRAINT_NAME IS NULL THEN
-                    CASE
-                        WHEN c.COLUMN_COMMENT = '' THEN '#'
-                        ELSE c.COLUMN_COMMENT
-                    END
-                ELSE NULL
-            END
-            ORDER BY c.ordinal_position SEPARATOR ''
-        ) AS columnTypes
-    FROM 
-        INFORMATION_SCHEMA.TABLES t
-    JOIN 
-        INFORMATION_SCHEMA.COLUMNS c
-    ON 
-        t.TABLE_SCHEMA = c.TABLE_SCHEMA
-        AND t.TABLE_NAME = c.TABLE_NAME
-    LEFT JOIN 
-        INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu
-    ON 
-        c.TABLE_SCHEMA = kcu.TABLE_SCHEMA
-        AND c.TABLE_NAME = kcu.TABLE_NAME
-        AND c.COLUMN_NAME = kcu.COLUMN_NAME
-        AND kcu.CONSTRAINT_NAME = 'PRIMARY'
-    WHERE 
-        t.TABLE_SCHEMA = 'cs340_licatoa'
-        AND t.TABLE_TYPE = 'BASE TABLE'
-    GROUP BY 
-        t.TABLE_NAME;`
-    try {
-        const rows = await db.query(dbInfoQuery);
-        return rows;
-    } catch (error) {
-        console.error("Error fetching initial database info for server:", error)
-    }
-}
-
 // Export the functions as methods of an object
 module.exports = {
-    getDBInfo,
-    fetchDBInfoServer
+    getDBInfo
 };

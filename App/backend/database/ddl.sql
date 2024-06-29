@@ -104,7 +104,7 @@ VALUES (1, 1, 1, 5, '2023-02-05'),
 CREATE TABLE `material_orders` (
     `material_order_id` int(11) NOT NULL,
     `total_cost` decimal(19, 2) NOT NULL COMMENT 'c',
-    `purchase_date` datetime NOT NULL COMMENT 'd'
+    `purchase_date` date NOT NULL COMMENT 'd'
 );
 --
 -- material_orders sample inserts
