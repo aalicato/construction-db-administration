@@ -103,6 +103,14 @@ const Table = ( {rows} ) => {
       <form onSubmit={handleSubmit}>
         {rows.slice(1).map( (row) => {
           const columnName = row["COLUMN_NAME"]
+          // if (row["COLUMN_KEY"] === "MUL") {
+          //   <div key={columnName}>
+          //   <label htmlFor={columnName}>{columnName}</label>
+          //   <select id={`create${row["COLUMN_KEY"]}`}>
+          //     <
+          //   </select>
+          //   </div>
+          // }
           return (
           <div key={columnName}>
           <label htmlFor={columnName}>{columnName}</label>

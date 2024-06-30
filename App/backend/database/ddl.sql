@@ -4,6 +4,12 @@
  Anson Davis, Alexander Licato
  DDL
  */
+
+-- Recreate fresh database
+drop database cs340_licatoa;
+create database cs340_licatoa;
+use cs340_licatoa;
+
 START TRANSACTION;
 --
 -- constructions table

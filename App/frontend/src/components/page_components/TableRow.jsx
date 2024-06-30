@@ -7,16 +7,24 @@ const TableRow = ({ record, fetchRecords, rows }) => {
   const [editable, setEditable] = useState(false);
   const [formData, setFormData] = useState( {} );
 
-  useEffect(() => {
+  const initFormData = () => {
     const initialFormData = rows.slice(1).reduce((accumulator, currentObject) => {
       accumulator[currentObject["COLUMN_NAME"]] = record[currentObject["COLUMN_NAME"]] || "";
       return accumulator;
     }, {});
     setFormData(initialFormData);
+  };
+
+  useEffect(() => {
+    initFormData();
     }, [record, rows]);
 
-    const handleEdit = () => {
-    setEditable(true);
+    const handleEdit = (state) => {
+      if (state) setEditable(true);
+      else {
+        setEditable(false);
+        initFormData();
+      }
     };
 
   const handleInputChange = (e) => {
@@ -25,7 +33,6 @@ const TableRow = ({ record, fetchRecords, rows }) => {
       ...prevData,
       [name]: value,
     }));
-    console.log(formData);
     }
 
   const handleUpdate = async () => {
@@ -87,7 +94,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
             )
           }
           <td>
-            <button type="button" onClick={() => setEditable(false)}>
+            <button type="button" onClick={() => handleEdit(false)}>
               Cancel
             </button>
           </td>
@@ -106,7 +113,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
             })
           }
           <td>
-            <BiEditAlt onClick={handleEdit} size={25} style={{ cursor: "pointer" }} />
+            <BiEditAlt onClick={() => handleEdit(true)} size={25} style={{ cursor: "pointer" }} />
           </td>
           <td>
             <BsTrash onClick={deleteRow} size={25} style={{ cursor: "pointer" }} />

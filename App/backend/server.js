@@ -30,6 +30,7 @@ function initServer(tableColumns) {
     // API Routes for backend CRUD:
     app.use("/api/dbinfo", DBInfoRouter);
     Object.keys(tableColumns).map((table) => {
+      const parentTables = [];
       console.log(table, tableColumns[table])
       app.use(`/api/${table}`, generateTablePageRoutes(table, tableColumns[table]))
     })

@@ -1,6 +1,6 @@
 const express = require("express");
 const DBInfoRouter = express.Router();
-const { getDBInfo } = require("../controllers/dbInfoController")
+const { getDBInfo } = require("../controllers/dbController")
 
 DBInfoRouter.get("/", getDBInfo);
 
