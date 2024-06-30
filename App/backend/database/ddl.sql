@@ -18,10 +18,10 @@ START TRANSACTION;
 CREATE TABLE `constructions` (
     `construction_id` int(11) NOT NULL,
     `project_id` int(11) NULL,
-    `construction_start_date` date DEFAULT NULL,
-    `construction_completion_date` date DEFAULT NULL,
-    `construction_location` varchar(60) NOT NULL,
-    `construction_total` decimal(19, 2) NOT NULL COMMENT 'c'
+    `construction_start_date` date DEFAULT NULL COMMENT 'date',
+    `construction_completion_date` date DEFAULT NULL COMMENT 'date',
+    `construction_location` varchar(60) NOT NULL COMMENT 'address',
+    `construction_total` decimal(19, 2) NOT NULL COMMENT 'price'
 );
 --
 -- constructions sample inserts
@@ -86,7 +86,7 @@ CREATE TABLE `material_expendings` (
     `vendor_specific_material_id` int(11) NOT NULL,
     `construction_id` int(11) NOT NULL,
     `quantity_material_expended` int(11) NOT NULL,
-    `date_expended` date DEFAULT NULL
+    `date_expended` date DEFAULT NULL COMMENT 'date'
 );
 --
 -- material_expendings sample inserts
@@ -109,8 +109,8 @@ VALUES (1, 1, 1, 5, '2023-02-05'),
 
 CREATE TABLE `material_orders` (
     `material_order_id` int(11) NOT NULL,
-    `total_cost` decimal(19, 2) NOT NULL COMMENT 'c',
-    `purchase_date` date NOT NULL
+    `total_cost` decimal(19, 2) NOT NULL COMMENT 'price',
+    `purchase_date` date NOT NULL COMMENT 'date'
 );
 --
 -- material_orders sample inserts
@@ -157,10 +157,10 @@ VALUES (1, 1, 1, 40),
 CREATE TABLE `projects` (
     `project_id` int(11) NOT NULL,
     `project_manager` varchar(45) NOT NULL,
-    `project_start_date` date NOT NULL,
-    `project_completion_date` date NOT NULL,
-    `project_location` varchar(60) NOT NULL,
-    `project_total` decimal(19, 2) NOT NULL COMMENT 'c'
+    `project_start_date` date NOT NULL COMMENT 'date',
+    `project_completion_date` date NOT NULL COMMENT 'date',
+    `project_location` varchar(60) NOT NULL COMMENT 'address',
+    `project_total` decimal(19, 2) NOT NULL COMMENT 'price'
 );
 --
 -- projects table sample inserts
@@ -206,9 +206,9 @@ VALUES (
 CREATE TABLE `vendors` (
     `vendor_id` int(11) NOT NULL,
     `name` varchar(145) NOT NULL,
-    `email_address` varchar(50) NOT NULL,
-    `phone_number` varchar(20) NOT NULL,
-    `address` varchar(60) NOT NULL
+    `email_address` varchar(50) NOT NULL COMMENT 'address',
+    `phone_number` varchar(20) NOT NULL COMMENT 'phone',
+    `address` varchar(60) NOT NULL COMMENT 'address'
 );
 --
 -- vendors table sample inserts
@@ -258,7 +258,7 @@ CREATE TABLE `vendor_specific_materials` (
     `vendor_specific_material_id` int(11) NOT NULL,
     `vendor_id` int(11) NOT NULL,
     `material_id` int(11) NOT NULL,
-    `per_unit_price` decimal(19, 2) NOT NULL COMMENT 'c',
+    `per_unit_price` decimal(19, 2) NOT NULL COMMENT 'price',
     `units_available` int(11) NOT NULL
 );
 --

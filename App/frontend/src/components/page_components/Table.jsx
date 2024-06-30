@@ -93,8 +93,8 @@ const Table = ( {rows} ) => {
             </tr>
           </thead>
           <tbody>
-            {records.map((record) => (
-              <TableRow key={record[rows[0][0]["COLUMN_NAME"]]} record={record} fetchRecords={fetchRecords} rows={rows}/>
+            {records.map((record, index) => (
+              <TableRow key={index} record={record} fetchRecords={fetchRecords} rows={rows}/>
             ))}
           </tbody>
         </table>
@@ -116,7 +116,7 @@ const Table = ( {rows} ) => {
           <label htmlFor={columnName}>{columnName}</label>
           <input className="border"
             key={columnName}
-            type={formType(row["DATA_TYPE"])}
+            type={formType(row["COLUMN_COMMENT"])}
             name={columnName}
             value={formData.columnName}
             onChange={handleInputChange}

@@ -3,6 +3,7 @@ const mysql = require("mysql2");
 require("dotenv").config();
 
 // Create a 'connection pool' using the provided credentials
+
 const pool = mysql.createPool({
   connectionLimit: 10,
   waitForConnections: true,

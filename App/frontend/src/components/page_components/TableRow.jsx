@@ -8,11 +8,14 @@ const TableRow = ({ record, fetchRecords, rows }) => {
   const [formData, setFormData] = useState( {} );
 
   const initFormData = () => {
+    if (!editable) {
     const initialFormData = rows[0].slice(1).reduce((accumulator, currentObject) => {
       accumulator[currentObject["COLUMN_NAME"]] = record[currentObject["COLUMN_NAME"]] || "";
       return accumulator;
     }, {});
+    console.log("Form data initialized.")
     setFormData(initialFormData);
+  }
   };
 
   useEffect(() => {
@@ -42,7 +45,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
       const response = await axios.put(URL, formData);
       if (response.status === 200) {
         setEditable(false); // Turn off edit mode on successful update
-        fetchRecords(); // Refresh records
+        fetchRecords(); // Refresh record
       } else {
         console.log("Error updating record.")
       }
@@ -66,7 +69,9 @@ const TableRow = ({ record, fetchRecords, rows }) => {
   };
 
   const formType = (columnType) => {
-    if (columnType === "date") return "date";
+    const ret;
+    if (columnType === "date") ret = columnType;
+    else if (columnType ===)
     return "text";
   };
 
@@ -82,7 +87,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
                 <td>
                 <input
                 key={row["COLUMN_NAME"]}
-                type={formType(row["DATA_TYPE"])}
+                type={formType(row["COLUMN_COMMENT"])}
                 name={row["COLUMN_NAME"]}
                 onChange={handleInputChange}
                 required
@@ -107,8 +112,8 @@ const TableRow = ({ record, fetchRecords, rows }) => {
           {
             rows[0].map((row, index) => {
               let value = record[row["COLUMN_NAME"]];
-              if (row["COLUMN_COMMENT"] === "c") value = "$" + value;
-              if (value && row["DATA_TYPE"] === "date") value = value.slice(5,7) + "/" + value.slice(8, 10) + "/" + value.slice(0,4) ; 
+              if (row["COLUMN_COMMENT"] === "price") value = "$" + value;
+              if (value && row["COLUMN_COMMENT"] === "date") value = value.slice(5,7) + "/" + value.slice(8, 10) + "/" + value.slice(0,4) ; 
             return (<td key={index}>{value}</td>)
             })
           }
