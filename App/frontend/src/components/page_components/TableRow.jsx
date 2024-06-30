@@ -8,7 +8,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
   const [formData, setFormData] = useState( {} );
 
   const initFormData = () => {
-    const initialFormData = rows.slice(1).reduce((accumulator, currentObject) => {
+    const initialFormData = rows[0].slice(1).reduce((accumulator, currentObject) => {
       accumulator[currentObject["COLUMN_NAME"]] = record[currentObject["COLUMN_NAME"]] || "";
       return accumulator;
     }, {});
@@ -17,7 +17,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
 
   useEffect(() => {
     initFormData();
-    }, [record, rows]);
+    }, [record, rows[0]]);
 
     const handleEdit = (state) => {
       if (state) setEditable(true);
@@ -37,7 +37,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
 
   const handleUpdate = async () => {
     try {
-      const URL = import.meta.env.VITE_API_URL + rows[0]["TABLE_NAME"] + "/" + record[rows[0]["COLUMN_NAME"]];
+      const URL = import.meta.env.VITE_API_URL + rows[0][0]["TABLE_NAME"] + "/" + record[rows[0][0]["COLUMN_NAME"]];
       console.log(formData);
       const response = await axios.put(URL, formData);
       if (response.status === 200) {
@@ -54,7 +54,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
 
   const deleteRow = async () => {
     try {
-      const URL = import.meta.env.VITE_API_URL + rows[0]["TABLE_NAME"] + "/" + record[rows[0]["COLUMN_NAME"]];
+      const URL = import.meta.env.VITE_API_URL + rows[0][0]["TABLE_NAME"] + "/" + record[rows[0][0]["COLUMN_NAME"]];
       const response = await axios.delete(URL);
       if (response.status === 204) {
         fetchRecords();
@@ -71,12 +71,12 @@ const TableRow = ({ record, fetchRecords, rows }) => {
   };
 
   return (
-    <tr className="text-l" key={record[rows[0]["COLUMN_NAME"]]}>
+    <tr className="text-l" key={record[rows[0][0]["COLUMN_NAME"]]}>
       {editable ? (
         <>
-          <td>{record[rows[0]["COLUMN_NAME"]]}</td>
+          <td>{record[rows[0][0]["COLUMN_NAME"]]}</td>
           {
-            rows.slice(1).map((row) => {
+            rows[0].slice(1).map((row) => {
                 console.log("Setting default values for input to " + formData[row["COLUMN_NAME"]])
                 return (
                 <td>
@@ -105,7 +105,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
       ) : (
         <>
           {
-            rows.map((row, index) => {
+            rows[0].map((row, index) => {
               let value = record[row["COLUMN_NAME"]];
               if (row["COLUMN_COMMENT"] === "c") value = "$" + value;
               if (value && row["DATA_TYPE"] === "date") value = value.slice(5,7) + "/" + value.slice(8, 10) + "/" + value.slice(0,4) ; 

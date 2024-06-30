@@ -6,24 +6,26 @@ import axios from 'axios';
 import TablePage from "./pages/TablePage"
 
 function App() {
-  const [tablesColumns, setTablesColumns] = useState({});
+  const [tablesColumns, setTablesColumns] = useState([]);
 
   const fetchDBInfo = async () => {
     try {
       const URL = import.meta.env.VITE_API_URL + "dbinfo";
       const response = await axios.get(URL);
-      console.log(response);
-      const tableColumns = response.data[0][0];
-      const newtablesColumns = {};
+      const newTablesColumns = {};
       let prevTable = null;
       
-      tableColumns.map( (row) => {
+      response.data[0][0].map( (row) => {
         prevTable = (row["TABLE_NAME"] === prevTable) ? prevTable : row["TABLE_NAME"];
-        if (newtablesColumns[prevTable]) newtablesColumns[prevTable].push(row);
-        else newtablesColumns[prevTable] = [row];
+        if (newTablesColumns[prevTable]) newTablesColumns[prevTable][0].push(row);
+        else newTablesColumns[prevTable] = [[row], []];
       })
 
-      setTablesColumns(newtablesColumns);
+      response.data[0][1].map( (referencingRow) => {
+        newTablesColumns[referencingRow["REFERENCING_TABLE"]][1].push(referencingRow)
+      })
+      console.log(newTablesColumns)
+      setTablesColumns(newTablesColumns);
     } catch (error) {
       alert("Error fetching DB info from the server.");
       console.error("Error fetching DB info:", error);

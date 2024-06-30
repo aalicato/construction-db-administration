@@ -10,7 +10,7 @@ const Table = ( {rows} ) => {
 
   const fetchRecords = async () => {
     try {
-      const URL = import.meta.env.VITE_API_URL + rows[0]["TABLE_NAME"];
+      const URL = import.meta.env.VITE_API_URL + rows[0][0]["TABLE_NAME"];
       const response = await axios.get(URL);
       console.log("Fetched records:", response)
       setRecords(response.data);
@@ -22,17 +22,17 @@ const Table = ( {rows} ) => {
 
   useEffect(() => {
     fetchRecords();
-    if (rows.length > 0) {
-      const initialFormData = rows.reduce((accumulator, currentObject) => {
+    if (rows[0].length > 0) {
+      const initialFormData = rows[0].reduce((accumulator, currentObject) => {
         accumulator[currentObject["COLUMN_NAME"]] = "";
         return accumulator;
       }, {});
       setFormData(initialFormData);
     }
-  }, [rows]);
+  }, [rows[0]]);
 
   const resetFormFields = () => {
-    setFormData( rows.slice(1).reduce((accumulator, currentObject) => {
+    setFormData( rows[0].slice(1).reduce((accumulator, currentObject) => {
       accumulator[currentObject["COLUMN_NAME"]] = "";
       return accumulator;
     }, {}) );
@@ -50,13 +50,13 @@ const Table = ( {rows} ) => {
     // Prevent page reload
     e.preventDefault();
     // Create a new material object from the form data
-    const newRecord = rows.slice(1).reduce((accumulator, currentObject) => {
+    const newRecord = rows[0].slice(1).reduce((accumulator, currentObject) => {
       accumulator[currentObject["COLUMN_NAME"]] = formData[currentObject["COLUMN_NAME"]];
       return accumulator;
     }, {});
     console.log("New record to be created:", newRecord);
     try {
-      const URL = import.meta.env.VITE_API_URL + rows[0]["TABLE_NAME"];
+      const URL = import.meta.env.VITE_API_URL + rows[0][0]["TABLE_NAME"];
       const response = await axios.post(URL, newRecord);
       if (response.status === 201) {
         fetchRecords();
@@ -87,21 +87,21 @@ const Table = ( {rows} ) => {
           <thead>
             <tr className="border border-indigo-600">
               <th>ID</th>
-              {rows.slice(1).map((row) => (
+              {rows[0].slice(1).map((row) => (
                 <th key={row["COLUMN_NAME"]} >{row["COLUMN_NAME"]}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {records.map((record) => (
-              <TableRow key={record[rows[0]["COLUMN_NAME"]]} record={record} fetchRecords={fetchRecords} rows={rows}/>
+              <TableRow key={record[rows[0][0]["COLUMN_NAME"]]} record={record} fetchRecords={fetchRecords} rows={rows}/>
             ))}
           </tbody>
         </table>
       )}
       <h2 className="mt-5 mb-2 text-xl">Create New Record</h2>
       <form onSubmit={handleSubmit}>
-        {rows.slice(1).map( (row) => {
+        {rows[0].slice(1).map( (row) => {
           const columnName = row["COLUMN_NAME"]
           // if (row["COLUMN_KEY"] === "MUL") {
           //   <div key={columnName}>
