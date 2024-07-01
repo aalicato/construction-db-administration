@@ -10,7 +10,7 @@ function App() {
 
   const fetchDBInfo = async () => {
     try {
-      const URL = import.meta.env.VITE_API_URL + "dbinfo";
+      const URL = import.meta.env.VITE_API_URL + "misc";
       const response = await axios.get(URL);
       const newTablesColumns = {};
       let prevTable = null;

@@ -68,13 +68,6 @@ const TableRow = ({ record, fetchRecords, rows }) => {
     }
   };
 
-  const formType = (columnType) => {
-    const ret;
-    if (columnType === "date") ret = columnType;
-    else if (columnType ===)
-    return "text";
-  };
-
   return (
     <tr className="text-l" key={record[rows[0][0]["COLUMN_NAME"]]}>
       {editable ? (
@@ -82,7 +75,18 @@ const TableRow = ({ record, fetchRecords, rows }) => {
           <td>{record[rows[0][0]["COLUMN_NAME"]]}</td>
           {
             rows[0].slice(1).map((row) => {
-                console.log("Setting default values for input to " + formData[row["COLUMN_NAME"]])
+                console.log("Setting default values for input to " + formData[row["COLUMN_NAME"]]);
+                
+                switch(row["COLUMN_NAME"]) {
+                  case "price":
+                    
+                  case "address":
+
+                  case "phone":
+
+                  case "date":
+
+                }
                 return (
                 <td>
                 <input

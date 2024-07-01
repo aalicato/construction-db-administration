@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const DBInfoRouter = require("./routes/dbInfoRoutes")
+const tableAgnosticRouter = require("./routes/tableAgnosticRoutes")
 const generateTablePageRoutes = require("./routes/generateTablePageRoutes")
 const fetchDBInfoServer = require("./utils/fetchDBInfoServer")
 
@@ -28,10 +28,10 @@ function initServer(tableColumns) {
     app.use(express.json());
 
     // API Routes for backend CRUD:
-    app.use("/api/dbinfo", DBInfoRouter);
+    app.use("/api/misc", tableAgnosticRouter);
     Object.keys(tableColumns).map((table) => {
       const parentTables = [];
-      console.log(table, tableColumns[table])
+      // console.log(table, tableColumns[table])
       app.use(`/api/${table}`, generateTablePageRoutes(table, tableColumns[table]))
     })
 

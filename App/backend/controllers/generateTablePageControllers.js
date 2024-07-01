@@ -11,9 +11,9 @@ const getRecords = (table, columns) => (
   try {
     // Select all rows from the table
     const query = `SELECT * FROM ${table}`;
-    console.log(query, columns);
+    //console.log(query, columns);
     // Execute the query using the "db" object from the configuration file
-    const [rows] = await db.query(query);
+    const [rows] = await db.query(query, req.body);
     // Send back the rows to the client
     res.status(200).json(rows);
   } catch (error) {
@@ -45,7 +45,7 @@ const getRecordByID = (table, columns) => (
 const createRecord = (table, columns) => (
   async (req, res) => {
   try {
-    console.log(req.body)
+    // console.log(req.body)
     let query = `INSERT INTO ${table} (${columns.slice(1).map(column => column["COLUMN_NAME"]).join(", ")}) VALUES (${new Array (columns.length - 1).fill("?").join(", ")});`;
     const response = await db.query(query, columns.slice(1).map(column => req.body[column["COLUMN_NAME"]]));
     res.status(201).json(response);

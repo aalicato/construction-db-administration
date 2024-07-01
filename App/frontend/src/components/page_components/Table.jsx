@@ -10,10 +10,18 @@ const Table = ( {rows} ) => {
 
   const fetchRecords = async () => {
     try {
-      const URL = import.meta.env.VITE_API_URL + rows[0][0]["TABLE_NAME"];
-      const response = await axios.get(URL);
-      console.log("Fetched records:", response)
-      setRecords(response.data);
+      const recordsURL = import.meta.env.VITE_API_URL + rows[0][0]["TABLE_NAME"];
+      const dropdownsURL = import.meta.env.VITE_API_URL + "misc/get_column";
+      const responseRec = await axios.get(recordsURL);
+      console.log(rows[1])
+      if (rows[1].length == 0) setRecords (responseRec.data, []);
+      else {
+        const responseDrop = rows[1].map((row) => {
+          await axios.post(dropdownsURL, [row["REFERENCED_COLUMN"], row["REFERENCED_TABLE"]])
+        });
+      console.log("Fetched records, including for dropdowns:", responseRec, responseDrop)
+      setRecords(responseRec.data, responseDrop.data);
+      }
     } catch (error) {
       alert("Error fetching records from the server.");
       console.error("Error fetching records:", error);
