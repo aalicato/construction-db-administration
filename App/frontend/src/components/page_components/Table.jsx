@@ -6,6 +6,7 @@ import axios from "axios";
 const Table = ( {rows} ) => {
 
   const [records, setRecords] = useState([]);
+  const [dropdownRecords, setDropdownRecords] = useState({});
   const [formData, setFormData] = useState({});
 
   const fetchRecords = async () => {
@@ -13,15 +14,21 @@ const Table = ( {rows} ) => {
       const recordsURL = import.meta.env.VITE_API_URL + rows[0][0]["TABLE_NAME"];
       const dropdownsURL = import.meta.env.VITE_API_URL + "misc/get_column";
       const responseRec = await axios.get(recordsURL);
-      console.log(rows[1])
-      if (rows[1].length == 0) setRecords (responseRec.data, []);
-      else {
-        const responseDrop = rows[1].map((row) => {
-          await axios.post(dropdownsURL, [row["REFERENCED_COLUMN"], row["REFERENCED_TABLE"]])
+      console.log(rows)
+      setRecords(responseRec.data)
+      if (rows[1].length != 0) {
+        const requests = rows[1].map((row) => {
+          return axios.post(dropdownsURL, [row["REFERENCED_COLUMN"], row["REFERENCED_TABLE"]])
         });
-      console.log("Fetched records, including for dropdowns:", responseRec, responseDrop)
-      setRecords(responseRec.data, responseDrop.data);
+      const responses = await Promise.all(requests);
+      console.log(responses);
+      const responseDrop = {};
+      responses.map(response => {
+        Object.assign(responseDrop, response.data)
+      });
+      setDropdownRecords(responseDrop);
       }
+      console.log("New records and dropdown records:", records, dropdownRecords);
     } catch (error) {
       alert("Error fetching records from the server.");
       console.error("Error fetching records:", error);
@@ -101,9 +108,10 @@ const Table = ( {rows} ) => {
             </tr>
           </thead>
           <tbody>
-            {records.map((record, index) => (
-              <TableRow key={index} record={record} fetchRecords={fetchRecords} rows={rows}/>
-            ))}
+            {records.map((record, index) => {
+              console.log(dropdownRecords, record);
+              return (<TableRow key={index} record={record} dropdownRecords={dropdownRecords} fetchRecords={fetchRecords} rows={rows}/>)
+            })}
           </tbody>
         </table>
       )}

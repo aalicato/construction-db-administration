@@ -3,7 +3,7 @@ import axios from "axios";
 import { BsTrash } from "react-icons/bs";
 import { BiEditAlt } from "react-icons/bi";
 
-const TableRow = ({ record, fetchRecords, rows }) => {
+const TableRow = ({ record, dropdownRecords, fetchRecords, rows }) => {
   const [editable, setEditable] = useState(false);
   const [formData, setFormData] = useState( {} );
 
@@ -13,7 +13,7 @@ const TableRow = ({ record, fetchRecords, rows }) => {
       accumulator[currentObject["COLUMN_NAME"]] = record[currentObject["COLUMN_NAME"]] || "";
       return accumulator;
     }, {});
-    console.log("Form data initialized.")
+    console.log("Form data initialized. Here's the record:", record)
     setFormData(initialFormData);
   }
   };
@@ -76,26 +76,48 @@ const TableRow = ({ record, fetchRecords, rows }) => {
           {
             rows[0].slice(1).map((row) => {
                 console.log("Setting default values for input to " + formData[row["COLUMN_NAME"]]);
-                
-                switch(row["COLUMN_NAME"]) {
+                const required = row["IS_NULLABLE"];
+                if (row["COLUMN_KEY"] === "MUL") {
+                  return (
+                    <td>
+                    <select
+                    name={row["COLUMN_NAME"]}
+                    onChange={handleInputChange}
+                    defaultValue={formData[row["COLUMN_NAME"]]}
+                    required={(required === "YES") ? true : false}>
+                    {console.log(dropdownRecords, row["COLUMN_NAME"])}
+                    {dropdownRecords[row["COLUMN_NAME"]].map((option, index) => (
+                      <option key={index} value={option[row["COLUMN_NAME"]]}>
+                        {option[row["COLUMN_NAME"]]}
+                      </option>
+                    ))}
+                  </select>
+                  </td>
+                  )
+                }
+                var inputType = "text";
+                var pattern = ".*"
+                switch(row["COLUMN_COMMENT"]) {
                   case "price":
-                    
-                  case "address":
-
+                    pattern = "\d+(\.\d+)?"
                   case "phone":
-
+                    inputType = "tel"
+                    pattern = "(\+\d{1,2}\s?)?(\(\d{3}\)\s?|\d{3}[-.\s]?)?\d{3}[-.\s]?\d{4}"
                   case "date":
-
+                    inputType = "date";
+                  case "email":
+                    inputType = "email";
                 }
                 return (
                 <td>
                 <input
                 key={row["COLUMN_NAME"]}
-                type={formType(row["COLUMN_COMMENT"])}
+                type={inputType}
                 name={row["COLUMN_NAME"]}
                 onChange={handleInputChange}
-                required
+                required={(required === "YES") ? true : false}
                 defaultValue={formData[row["COLUMN_NAME"]]}
+                pattern={pattern}
                 />
                 </td>
                 )

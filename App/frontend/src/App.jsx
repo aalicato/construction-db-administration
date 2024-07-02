@@ -37,7 +37,7 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <div className=''>
       <div>
         <Navbar tables={Object.keys(tablesColumns)}/>
       </div>

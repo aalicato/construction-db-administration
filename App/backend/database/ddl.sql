@@ -206,7 +206,7 @@ VALUES (
 CREATE TABLE `vendors` (
     `vendor_id` int(11) NOT NULL,
     `name` varchar(145) NOT NULL,
-    `email_address` varchar(50) NOT NULL COMMENT 'address',
+    `email_address` varchar(50) NOT NULL COMMENT 'email',
     `phone_number` varchar(20) NOT NULL COMMENT 'phone',
     `address` varchar(60) NOT NULL COMMENT 'address'
 );
