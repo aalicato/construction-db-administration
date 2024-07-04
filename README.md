@@ -1,7 +1,7 @@
 # Web App for Construction Company Database Administration
 
 ## Table of Contents
-1. [Project Overview](#Project Overview)
+1. [Project Overview](#Project-Overview)
 2. [Features](#Features)
 3. [Citations](#Citations)
 
