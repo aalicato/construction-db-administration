@@ -119,14 +119,9 @@ const Table = ( {rows} ) => {
       <form onSubmit={handleSubmit}>
         {rows[0].slice(1).map( (row) => {
           const columnName = row["COLUMN_NAME"]
-          // if (row["COLUMN_KEY"] === "MUL") {
-          //   <div key={columnName}>
-          //   <label htmlFor={columnName}>{columnName}</label>
-          //   <select id={`create${row["COLUMN_KEY"]}`}>
-          //     <
-          //   </select>
-          //   </div>
-          // }
+          if (row["COLUMN_KEY"] === "MUL") {
+            return
+          }
           return (
           <div key={columnName}>
           <label htmlFor={columnName}>{columnName}</label>
@@ -139,8 +134,8 @@ const Table = ( {rows} ) => {
           />
           </div>
           )
-        }
-        )}
+        
+        })}
         
         <button type="submit">Create Record</button>
       </form>
