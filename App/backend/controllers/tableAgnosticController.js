@@ -15,7 +15,7 @@ const getDBInfo = async (req, res) => {
         WHERE 
             kcu.REFERENCED_TABLE_SCHEMA = DATABASE()
             AND kcu.REFERENCED_TABLE_NAME IS NOT NULL;`);
-        // console.log(rows[0][0], rows[0][1]);
+	    console.log(rows);
         res.status(200).json(rows);
     } catch (error) {
         console.error("Error fetching the DB info:", error);

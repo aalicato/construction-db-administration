@@ -14,6 +14,7 @@ fetchDBInfoServer().then(tables => {
     if (tableColumns[prevTable]) tableColumns[prevTable].push(table);
     else tableColumns[prevTable] = [table];
     })
+	console.log(tableColumns);
   initServer(tableColumns);
   }, 
   () => console.error("Error fetching DB info to initialize server")
@@ -31,7 +32,6 @@ function initServer(tableColumns) {
     app.use("/api/misc", tableAgnosticRouter);
     Object.keys(tableColumns).map((table) => {
       const parentTables = [];
-      // console.log(table, tableColumns[table])
       app.use(`/api/${table}`, generateTablePageRoutes(table, tableColumns[table]))
     })
 
