@@ -1,6 +1,9 @@
 const express = require("express");
 const miscRouter = express.Router();
-const { getDBInfo, getRecordsByColumn } = require("../controllers/tableAgnosticController")
+const {
+  getDBInfo,
+  getRecordsByColumn,
+} = require("../controllers/tableAgnosticController");
 
 miscRouter.post("/get_column", getRecordsByColumn);
 miscRouter.get("/", getDBInfo);

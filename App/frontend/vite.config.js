@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import dotenv from 'dotenv'
-import tailwindcss from 'tailwindcss'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import dotenv from "dotenv";
+import tailwindcss from "tailwindcss";
 
-dotenv.config()
+dotenv.config();
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,13 +11,13 @@ export default defineConfig({
   css: {
     postcss: {
       plugins: [tailwindcss()],
-    }
+    },
   },
   esbuild: {
-    loader: "jsx"
+    loader: "jsx",
   },
   server: {
     // Use VITE_PORT from your .env, or default to a port if not specified
-    port: parseInt(process.env.VITE_PORT, 10) || 5173
-  }
-})
+    port: parseInt(process.env.VITE_PORT, 10) || 5173,
+  },
+});
